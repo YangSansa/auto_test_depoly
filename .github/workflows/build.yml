@@ -16,13 +16,12 @@ jobs:
       - name: lock npm version
         uses: actions/setup-node@v4
         with:
-          node-version: 18.12.0
+          node-version: '18'
 
       - name: Install and Build
         run: |
-          npm -g i pnpm
-          pnpm install
-          pnpm run build || echo "构建失败，继续执行其他步骤"     
+          npm install
+          npm run build || echo "构建失败，继续执行其他步骤"     
         env:
           NODE_OPTIONS: 'MAX_OLD_SPACE_SIZE=4096'
 
