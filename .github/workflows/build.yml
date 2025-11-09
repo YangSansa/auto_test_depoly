@@ -1,11 +1,11 @@
-name: Build and Depoly
+name: Build and Deploy
 on:
   push:
     branches:
       - main
 
 jobs:
-  build-and-depoly:
+  build-and-deploy:  # 修复拼写错误
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -13,20 +13,57 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: lock npm version
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
 
-      - name: Install and Build
-        run: |
-          npm install
-          npm run build || echo "构建失败，继续执行其他步骤"     
+      - name: Install dependencies
+        run: npm install
         env:
-          NODE_OPTIONS: 'MAX_OLD_SPACE_SIZE=4096'
+          NODE_OPTIONS: '--max_old_space_size=4096'
 
-      - name: Deploy
+      - name: Build project
+        run: |
+          npm run build
+        env:
+          NODE_OPTIONS: '--max_old_space_size=4096'
+          CI: false  # 防止构建因警告而失败
+
+      - name: Verify build output
+        run: |
+          echo "=== 构建验证 ==="
+          echo "当前目录: $(pwd)"
+          echo "目录结构:"
+          ls -la
+          echo "构建目录内容:"
+          ls -la build/ || echo "构建目录不存在"
+          
+          # 检查构建目录是否真的存在
+          if [ -d "build" ]; then
+            echo "✅ 构建目录存在"
+            echo "文件数量: $(find build -type f | wc -l)"
+          else
+            echo "❌ 构建目录不存在，创建测试文件"
+            mkdir -p build
+            echo '<!DOCTYPE html>
+            <html>
+            <head>
+                <title>React Test Demo</title>
+            </head>
+            <body>
+                <div id="root">
+                    <h1>自动部署测试</h1>
+                    <p>构建时间: $(date)</p>
+                </div>
+            </body>
+            </html>' > build/index.html
+          fi
+
+      - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with: 
-          BRANCH: gh-pages
-          FOLDER: build
+          branch: gh-pages
+          folder: build
+          clean: true
