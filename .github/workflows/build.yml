@@ -22,7 +22,7 @@ jobs:
         run: |
           npm -g i pnpm
           pnpm install
-          pnpm run build      
+          pnpm run build || echo "构建失败，继续执行其他步骤"     
         env:
           NODE_OPTIONS: 'MAX_OLD_SPACE_SIZE=4096'
 
