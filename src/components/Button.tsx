@@ -1,5 +1,5 @@
 /* eslint-disable no-unreachable */
-import React from 'react' //通过索引获取 buttonTypes 数组元素的联合类型
+import * as React from 'react' //通过索引获取 buttonTypes 数组元素的联合类型
 
 import { useBoolean } from '../hooks/useBoolean'
 
@@ -12,11 +12,22 @@ interface IButtonProps {
     children: React.ReactNode
 }
 
-export const Button: React.FC<IButtonProps> = ({ type = 'primary', children }) => {
+/* export const Button: React.FC<IButtonProps> = ({ type = 'primary', children }) => {
     const [isDisabled, toggle] = useBoolean(false)
     return 
-    <button disabled={isDisabled} onClick={toggle}>
+        (
+            <button disabled={isDisabled} onClick={toggle}>
+                {children}
+                {type}
+            </button>
+        )
+} */
+export const Button: React.FC<IButtonProps> = ({ type = 'primary', children }) => {
+    const [isDisabled, toggle] = useBoolean(false)
+    return (
+        <button disabled={isDisabled} onClick={toggle}>
             {children}
             {type}
-    </button>
+        </button>
+    )
 }
