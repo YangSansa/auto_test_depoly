@@ -1,0 +1,27 @@
+name: Build and Depoly
+on:
+  push:
+    branches:
+      -master
+
+jobs:
+  build-and-depoly:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@2.3.1
+
+      - name: lock npm version
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.12.0
+
+      - name: Install and Build
+        run: |
+          npm -g i pnpm
+          pnpm install
+          pnpm run build      
+        env:
+          NODE_OPTIONS: 'MAX_OLD_SPACE_SIZE=4096'
